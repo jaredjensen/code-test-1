@@ -1,3 +1,5 @@
+**Heads up!** I want to preface this by saying that I'm looking for a _transition_ role to get more intense experience with microservice architecture and CI/CD.  I have ~22 years of full stack development experience with console/desktop/web apps, services, APIs, databases, integration, etc in both IC and lead roles, but I'm fairly new to microservices.  I expect to ramp quickly by leveraging my broad experience, but I do not want to present myself as an expert.  Therefore, some of these answers are based on research, not experience.
+
 # Task 1 - Troubleshooting
 
 You have developed a multi-threaded Windows service.  QA suspects this service is leaking memory.
@@ -218,23 +220,22 @@ A Web Application accepts requests from a number of clients. It submits the requ
 
 ## What possible logical problems do you see in this design?
 
+1. Requests must be correlated to responses so the web app handler only acts on a response to the request it submitted
 1. If the web server instance fails after publishing to the queue, it will be unavailable to receive the response
-1. If the operation is long-running, it affects the web server's ability to scale
-1. Assuming there's only one instance of the microservice, it could become a bottleneck
+1. The web server request handler must wait for the correct response to appear in the queue
 1. There is no retry process
 
 ## What possible performance problems do you see in this design?
 
-1.
-1.
-1.
+1. The web server could submit requests to the queue faster than the microservice can process them
 
 ## How would you address these problems?
 
-1.
-1.
-1.
+With regard to correlation, you could either use shared queues and a correlation ID (e.g. web session ID or similar) to associate requests and responses, or use a transient queue for each web request.  In either case, the web methods should be async to avoid blocking and allow for better scaling.
 
+However, I'd lean toward a fire-and-forget pattern, where the web app publishes to the Request Queue and then immediately returns a correlation ID to the client, which then begins polling an API for status.  When the microservice is done, it publishes to the Response Queue, where some other service records status to shared storage (memcache, database, etc).  At the next polling interval, the web server returns a "completed" status to the client along with any other job detail it requires.  Websockets could be used instead of polling, but polling will work in a load-balanced environment and lowers overall complexity.
+
+I'd also set up a retry strategy so jobs could auto-retry a certain number of times before a failure message is published.
 
 # Task 6 - Design/Architecture (2 of 3)
 
