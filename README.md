@@ -4,9 +4,15 @@ You have developed a multi-threaded Windows service.  QA suspects this service i
 
 ## How would you verify QA's claim?
 
+Assuming no third party debugging tools are available, run the service in Visual Studio and use the Diagnostic Tools to review memory usage. Alternatively, use perfmon Memory/Committed Bytes, Process/Private Bytes, and similar counters.  Look for steadily increasing memory usage and/or spikes.
+
 ## How would you debug your service?
 
+Run it within Visual Studio under enough load to reproduce the leak, then take a few memory snapshots as usage is increasing.  Sort the heap size view by descending object size and look for objects that are consistently increasing in size.  The object type will hopefully point you in the right direction.
+
 ## How would you identify the leaking thread?
+
+Hmmm.  Short of logging thread IDs once I found suspect code as described above, I'm not sure.
 
 
 # Task 2 - General Programming
@@ -111,7 +117,7 @@ public class Result<T>
 }
 ```
 
-And GetLoginInfo() is an awaitable I/O bound operation, then
+And GetLoginInfo() is an awaitable I/O bound operation, then:
 
 ```cs
 async Task<Result<object>> SecurityGetSocialNetworkAsync(MobileRequest request)
@@ -244,9 +250,14 @@ A URL or HTTP header strategy would prevent this because the consumer would need
 
 ## What is your strategy to roll out updated APIs in production?
 
-
+Automate deployment of containers to ensure consistency and reduce downtime.
 
 ## How would you secure your RESTful APIs?
+
+1. Use SSL secured endpoints
+1. Use CORS to target specific browser consumers
+1. Only expose public services outside the firewall
+1. Use OAuth and JWT for user authorization
 
 
 # Task 7 - Design/Architecture (3 of 3)
