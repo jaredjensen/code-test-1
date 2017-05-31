@@ -292,4 +292,6 @@ Design and implement an application that generates or accepts as input a list/ar
 + Utilize multithreading to speed up sorting
 + Employ behavior-driven development.
 
-See the Visual Studio solution at Task8_MergeSort/MergeSort.sln
+See the Visual Studio solution at Task8_MergeSort/MergeSort.sln.  Either run the unit tests or build the solution and run the console app using a text file of comma-delimited integers for input (note that I only added very basic input validation for this test):
+
+`MergeSort.exe -i "C:\full\path\to\input.txt"`
