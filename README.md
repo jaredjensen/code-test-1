@@ -108,7 +108,11 @@ async Task SecurityGetSocialNetwork (MobileRequest request, Result<object> resul
 
 ## How would you fix them?
 
-Assuming Result is a generic defined as:
+Without more context, it's difficult to guess where the performance issues are.  But assuming:
+
++ ProdConfiguration is loaded from config and available locally (i.e. fast access)
++ GetLoginInfo() is an awaitable I/O bound operation (e.g. database call)
++ Result is a generic defined as:
 
 ```cs
 public class Result<T>
@@ -119,7 +123,7 @@ public class Result<T>
 }
 ```
 
-And GetLoginInfo() is an awaitable I/O bound operation, then:
+Then I'd go with something like this:
 
 ```cs
 async Task<Result<object>> SecurityGetSocialNetworkAsync(MobileRequest request)
