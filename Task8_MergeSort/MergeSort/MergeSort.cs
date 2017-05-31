@@ -3,8 +3,8 @@
 namespace MergeSort
 {
 	/// <summary>
-	/// This is a port of the Java implementation at http://www.geeksforgeeks.org/merge-sort/, with multi-threading
-	/// added to the recursive Sort method.
+	/// This is a port of the Java implementation at http://www.geeksforgeeks.org/merge-sort/, with the original Sort method
+	/// wrapped with new methods for single- and multi-threaded operation.
 	/// </summary>
 	public class MergeSort
 	{
@@ -16,7 +16,7 @@ namespace MergeSort
 		/// This could be made smarter to reduce the number of threads instead of disabling multithreading
 		public void SortMultiThread(int[] arr, int numThreads)
 		{
-			// Arbitrary-selected threshold
+			// Arbitrarily-selected threshold
 			const int MULTITHREAD_THRESHOLD = 100;
 
 			int l = 0;

@@ -286,3 +286,5 @@ Design and implement an application that generates or accepts as input a list/ar
 + Use C# as implementation language
 + Utilize multithreading to speed up sorting
 + Employ behavior-driven development.
+
+See the Visual Studio solution at Task8_MergeSort/MergeSort.sln
