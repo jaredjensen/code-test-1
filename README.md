@@ -101,7 +101,7 @@ async Task SecurityGetSocialNetwork (MobileRequest request, Result<object> resul
 
 ## What bugs do you see?
 
-+ `async` implies asychronous, but there is no `await` statement, so method will run asynchronously
++ `async` implies asychronous, but there is no `await` statement, so method will run synchronously
 + `First()` assumes there will always be a result
 + `Result` seems to be an output parameter, but it's not flagged as `out` and will cause an exception if null
 + No error handling
