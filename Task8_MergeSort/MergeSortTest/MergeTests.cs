@@ -50,8 +50,9 @@ namespace MergeSortTest
 		[TestMethod]
 		public void ItShouldSortALargeRandomArray()
 		{
-			var array = GenerateRandomArray(100000, 10000000);
-			_mergeSort.SortSingleThread(array);
+			//var array = GenerateRandomArray(100000, 10000000);
+			var array = GenerateRandomArray(401, 401);
+			_mergeSort.SortMultiThread(array);
 			AssertResultMatchsArraySort(array);
 		}
 
@@ -59,7 +60,6 @@ namespace MergeSortTest
 		public void ItShouldSortFasterUsingMultipleThreads()
 		{
 			const int arraySize = 1000000;
-			const int numThreads = 4;
 
 			var array1 = GenerateRandomArray(arraySize, arraySize);
 			var array2 = new int[array1.Length];
@@ -71,7 +71,7 @@ namespace MergeSortTest
 			var singleThreadMs = stopwatch.ElapsedMilliseconds;
 
 			stopwatch = Stopwatch.StartNew();
-			_mergeSort.SortMultiThread(array2, numThreads);
+			_mergeSort.SortMultiThread(array2);
 			stopwatch.Stop();
 			var multiThreadMs = stopwatch.ElapsedMilliseconds;
 

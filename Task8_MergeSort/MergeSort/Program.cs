@@ -37,7 +37,7 @@ namespace MergeSort
 					}
 					else
 					{
-						mergeSort.SortMultiThread(array, options.NumThreads);
+						mergeSort.SortMultiThread(array);
 					}
 
 					// Write output to file

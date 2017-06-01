@@ -14,13 +14,14 @@ namespace MergeSort
 		}
 
 		/// This could be made smarter to reduce the number of threads instead of disabling multithreading
-		public void SortMultiThread(int[] arr, int numThreads)
+		public void SortMultiThread(int[] arr)
 		{
 			// Arbitrarily-selected threshold
 			const int MULTITHREAD_THRESHOLD = 100;
 
 			int l = 0;
 			int r = arr.Length - 1;
+			int numThreads = 4;
 
 			if (l < r)
 			{
@@ -34,25 +35,32 @@ namespace MergeSort
 				}
 
 				// Split the array and assign to threads
+				var boundaries = new int[numThreads];
 				var tasks = new Task[numThreads];
 				r = elementsPerThread - 1;
 				for (var i = 0; i < numThreads; i++)
 				{
-					tasks[i] = Task.Run(() => Sort(arr, l, r));
+					int L = l;
+					int R = (i < numThreads - 1 ? r : arr.Length - 1);
+
+					boundaries[i] = L;
+
+					tasks[i] = Task.Run(() =>Sort(arr, L, R));
+
+					if (i == numThreads - 1) break;
 
 					l += elementsPerThread;
-
-					if (i < numThreads - 1)
-					{
-						r += elementsPerThread;
-					}
-					else
-					{
-						r = arr.Length - 1;
-					}
+					r += elementsPerThread;
 				}
 
 				Task.WaitAll(tasks);
+
+				// Merge (still working this part out)
+				tasks = new Task[2];
+				tasks[0] = Task.Run(() => Merge(arr, 0, boundaries[1], boundaries[2] - 1));
+				tasks[1] = Task.Run(() => Merge(arr, boundaries[2], boundaries[3], arr.Length - 1));
+				Task.WaitAll(tasks);
+				Merge(arr, 0, boundaries[2], arr.Length - 1);
 			}
 		}
 
