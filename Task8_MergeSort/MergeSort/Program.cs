@@ -31,14 +31,7 @@ namespace MergeSort
 
 					// Sort the array
 					var mergeSort = new MergeSort();
-					if (options.NumThreads < 2)
-					{
-						mergeSort.SortSingleThread(array);
-					}
-					else
-					{
-						mergeSort.SortMultiThread(array);
-					}
+					mergeSort.SortMultiThread(array);
 
 					// Write output to file
 					var outputFile = Path.Combine(
@@ -67,9 +60,6 @@ namespace MergeSort
 	{
 		[Option('i', "input", Required = true, HelpText = "Full path to input file. Must contain comma-delimited integers.")]
 		public string InputFile { get; set; }
-
-		[Option('t', "threads", Required = false, DefaultValue = 4, HelpText = "Number of threads to use.")]
-		public int NumThreads { get; set; }
 
 		[HelpOption]
 		public string GetUsage()

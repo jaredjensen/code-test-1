@@ -16,6 +16,26 @@ namespace MergeSortTest
 		}
 
 		[TestMethod]
+		public void ItShouldDivideEvenLengthsCorrectly()
+		{
+			var divisions = _mergeSort.Divide(0, 99, 4);
+			Assert.AreEqual(3, divisions.Length);
+			Assert.AreEqual(24, divisions[0]);
+			Assert.AreEqual(49, divisions[1]);
+			Assert.AreEqual(74, divisions[2]);
+		}
+
+		[TestMethod]
+		public void ItShouldDivideUnevenLengthsNearlyLevel()
+		{
+			var divisions = _mergeSort.Divide(0, 101, 4);
+			Assert.AreEqual(3, divisions.Length);
+			Assert.AreEqual(25, divisions[0]);
+			Assert.AreEqual(50, divisions[1]);
+			Assert.AreEqual(76, divisions[2]);
+		}
+
+		[TestMethod]
 		public void ItShouldSortASingleElementArray()
 		{
 			var array = new[] { 0 };
@@ -51,7 +71,7 @@ namespace MergeSortTest
 		public void ItShouldSortALargeRandomArray()
 		{
 			//var array = GenerateRandomArray(100000, 10000000);
-			var array = GenerateRandomArray(401, 401);
+			var array = GenerateRandomArray(50, 50);
 			_mergeSort.SortMultiThread(array);
 			AssertResultMatchsArraySort(array);
 		}

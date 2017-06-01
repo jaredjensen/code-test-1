@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MergeSort
 {
@@ -13,14 +14,18 @@ namespace MergeSort
 			Sort(arr, 0, arr.Length - 1);
 		}
 
-		/// This could be made smarter to reduce the number of threads instead of disabling multithreading
+		// This could be made smarter to optimize the number of threads instead of disabling multithreading.
+		// I'm sure the implementation could be more elegant, too.
 		public void SortMultiThread(int[] arr)
 		{
 			// Arbitrarily-selected threshold
-			const int MULTITHREAD_THRESHOLD = 100;
+			const int MULTITHREAD_THRESHOLD = 10;
 
 			int l = 0;
 			int r = arr.Length - 1;
+
+			// Must be an even number, and should be a method parameter.  I'll keep it
+			// simple and try to avoid gold-plating this test.
 			int numThreads = 4;
 
 			if (l < r)
@@ -33,35 +38,55 @@ namespace MergeSort
 					SortSingleThread(arr);
 					return;
 				}
-
-				// Split the array and assign to threads
-				var boundaries = new int[numThreads];
-				var tasks = new Task[numThreads];
-				r = elementsPerThread - 1;
-				for (var i = 0; i < numThreads; i++)
+				else
 				{
-					int L = l;
-					int R = (i < numThreads - 1 ? r : arr.Length - 1);
+					var divisions = Divide(0, arr.Length, numThreads);
+					var tasks = new Task[numThreads];
 
-					boundaries[i] = L;
+					for (var i = 0; i <= divisions.Length; i++)
+					{
+						int L = i == 0 ? 0 : divisions[i - 1];
+						int R = i < divisions.Length ? divisions[i] - 1 : arr.Length - 1;
+						tasks[i] = Task.Run(() => Sort(arr, L, R));
+					}
 
-					tasks[i] = Task.Run(() =>Sort(arr, L, R));
+					Task.WaitAll(tasks);
 
-					if (i == numThreads - 1) break;
-
-					l += elementsPerThread;
-					r += elementsPerThread;
+					// Merge
+					tasks = new Task[2];
+					tasks[0] = Task.Run(() => Merge(arr, 0, divisions[0] - 1, divisions[1] - 1));
+					tasks[1] = Task.Run(() => Merge(arr, divisions[1], divisions[2] - 1, arr.Length - 1));
+					Task.WaitAll(tasks);
+					Merge(arr, 0, divisions[1] - 1, arr.Length - 1);
 				}
-
-				Task.WaitAll(tasks);
-
-				// Merge (still working this part out)
-				tasks = new Task[2];
-				tasks[0] = Task.Run(() => Merge(arr, 0, boundaries[1], boundaries[2] - 1));
-				tasks[1] = Task.Run(() => Merge(arr, boundaries[2], boundaries[3], arr.Length - 1));
-				Task.WaitAll(tasks);
-				Merge(arr, 0, boundaries[2], arr.Length - 1);
 			}
+		}
+
+		public int[] Divide(int l, int r, int segments, bool sort = true)
+		{
+			var len = r - l + 1;
+
+			if (len < segments) return new int[0];
+
+			var indexes = new List<int>();
+			do
+			{
+				int m = (l + r) / 2;
+				indexes.Add(m);
+
+				if (indexes.Count >= segments - 1) break;
+
+				indexes.AddRange(Divide(l, m, segments / 2, false));
+				indexes.AddRange(Divide(m + 1, r, segments / 2, false));
+
+			} while (indexes.Count < segments - 1);
+
+			if (sort)
+			{
+				indexes.Sort();
+			}
+
+			return indexes.ToArray();
 		}
 
 		private void Sort(int[] arr, int l, int r)
@@ -74,7 +99,7 @@ namespace MergeSort
 				// Sort first and second halves
 				Sort(arr, l, m);
 				Sort(arr, m + 1, r);
-
+				
 				// Merge the sorted halves
 				Merge(arr, l, m, r);
 			}
